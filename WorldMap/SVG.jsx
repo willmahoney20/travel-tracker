@@ -23,17 +23,17 @@ export default ({ lived, been, want, oneColor, width, height, openModal }) => {
                 openModal={openModal}
             />)}
             
-            {/* {Data.filter(country => country.show_title).map(({id, x, y, title}) => <Text 
+            {!oneColor && Data.filter(country => country.show_title).map(({id, x, y, title}) => <Text 
                 key={id}
                 x={x}
                 y={y}
                 textAnchor="middle"
                 fill='#000'
-                style={{ fontSize: 10, fontWeight: 500 }}
+                style={{ fontSize: 10, fontWeight: '500' }}
             >
                 {title}
             </Text>
-            )} */}
+            )}
         </Svg>
     )
 }

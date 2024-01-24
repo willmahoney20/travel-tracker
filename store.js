@@ -1,7 +1,156 @@
-import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Appearance } from 'react-native'
+import { create } from 'zustand'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const useStore = create(set => ({
+    // props for onboarding
+    onboarding: 1,
+    updateOnboarding: value => {
+        try {
+            set(state => {
+                AsyncStorage.setItem(
+                    'onboarding',
+                    JSON.stringify(value)
+                )
+                
+                return { onboarding: value }
+            })
+        } catch (err) {
+            console.error('Error updating the onboarding value:', err)
+        }
+    },
+    loadOnboarding: async () => {
+        try {
+            const onboardingValue = await AsyncStorage.getItem('onboarding')
+
+            set({ onboarding: onboardingValue ? JSON.parse(onboardingValue) : 0 })
+        } catch (err) {
+            console.error('Error loading onboarding progress from AsyncStorage:', err)
+        }
+    },
+    
+    // props for themes
+    themes: {
+        'dark': {
+            'bg1': '#000',
+            'bg2': '#232323',
+            'bg3': '#444',
+            'c1': '#fff',
+            'c2': '#ccc',
+        },
+        'light': {
+            'bg1': '#EDF2F4',
+            'bg2': '#FFF',
+            'bg3': '#D9D9D9',
+            'c1': '#000',
+            'c2': '#777',
+        }
+    },
+    theme: 'light', // use darkMode value to set this when the app loads
+
+    // props for settings
+    darkMode: false,
+    updateDarkMode: (value, device) => {
+        try {
+            set(state => {
+                let update = {}
+
+                // check to see if we need to turn off deviceSettings
+                if(device){
+                    update.deviceSettings = false
+                    AsyncStorage.setItem(
+                        'deviceSettings',
+                        JSON.stringify(false)
+                    )
+                }
+
+                AsyncStorage.setItem(
+                    'darkMode',
+                    JSON.stringify(value)
+                )
+
+                let new_theme = value ? 'dark' : 'light'
+                AsyncStorage.setItem(
+                    'theme',
+                    JSON.stringify(new_theme)
+                )
+
+                update.darkMode = value
+                update.theme = new_theme
+
+                return update
+            })
+        } catch (err) {
+            console.error('Error updating dark mode:', err)
+        }
+    },
+    deviceSettings: false,
+    updateDeviceSettings: value => {
+        try {
+            set(state => {
+                let update = {}
+
+                // if true, we need to get the users device preferences and use these for darkMode
+                if(value){
+                    const deviceValue = Appearance.getColorScheme()
+                    if(deviceValue !== null){
+                        let darkModeValue = deviceValue === 'dark' ? true : false
+                        set({ darkMode: darkModeValue })
+                        set({ theme: deviceValue })
+    
+                        AsyncStorage.setItem(
+                            'darkMode',
+                            JSON.stringify(darkModeValue)
+                        )
+    
+                        AsyncStorage.setItem(
+                            'theme',
+                            JSON.stringify(deviceValue)
+                        )
+
+                        update.darkMode = darkModeValue
+                        update.theme = deviceValue
+                    }
+                }
+    
+                AsyncStorage.setItem(
+                    'deviceSettings',
+                    JSON.stringify(value)
+                )
+
+                update.deviceSettings = value
+
+                return update
+            })
+        } catch (err) {
+            console.error('Error updating device settings:', err)
+        }
+    },
+    loadSettings: async () => {
+        try {
+            const deviceSettingsValue = await AsyncStorage.getItem('deviceSettings')
+
+            // if value is true, then we need to set the correct darkMode value based on the users device settings, otherwise get their app preference
+            if(JSON.parse(deviceSettingsValue)){
+                const deviceValue = Appearance.getColorScheme()
+                if(deviceValue !== null){
+                    set({ darkMode: deviceValue === 'dark' ? true : false })
+                    set({ theme: deviceValue })
+                }
+            } else {
+                const darkModeValue = await AsyncStorage.getItem('darkMode')
+                if(darkModeValue !== null){
+                    set({ darkMode: JSON.parse(darkModeValue) })
+                    set({ theme: JSON.parse(darkModeValue) ? 'dark' : 'light' })
+                }
+            }
+
+            if(deviceSettingsValue !== null) set({ deviceSettings: JSON.parse(deviceSettingsValue) })
+        } catch (err){
+            console.error('Error fetching device settings value:', err)
+        }
+    },
+
     // props for the "Lived" in countries
     livedCountries: [],
     addLived: country_id => {
@@ -128,6 +277,9 @@ const useStore = create(set => ({
         }
     }
 }))
+
+useStore.getState().loadOnboarding()
+useStore.getState().loadSettings()
 
 // load the livedCountries when the app starts
 useStore.getState().loadLivedCountries()

@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, useWindowDimensions } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { FlatList, View, Text, StyleSheet, SafeAreaView, Animated, useWindowDimensions } from 'react-native'
 import useStore from '../store'
 import AppStyles from '../Styles/AppStyles'
 import Countries from '../WorldMap/Countries'
 import SVG from '../WorldMap/SVG'
 
 export default () => {
-    const livedCountries = useStore(state => state.livedCountries)
-    const beenCountries = useStore(state => state.beenCountries)
-    const wantCountries = useStore(state => state.wantCountries)
-    const [oneColor, setOneColor] = useState('been')
+    const { livedCountries, beenCountries, wantCountries } = useStore()
+    const [oneColorIndex, setOneColorIndex] = useState(0)
+    const [oneColors] = useState(['been', 'lived', 'want'])
     const [cards, setCards] = useState([])
+    const scrollX = useRef(new Animated.Value(0)).current
     
     const { width } = useWindowDimensions()
     const SVG_RATIO = (1009.6727 / 689.96301)
@@ -58,81 +58,79 @@ export default () => {
     return (
         <View style={AppStyles.container}>
             <SafeAreaView style={{ flex: 1 }}>
-                <ScrollView>
-                    <View style={styles.mapCon}>
-                        <View style={styles.mapTitleCon}>
-                            <Text
-                                style={[
-                                    styles.mapTitle,
-                                    { color: oneColor === 'iived' ? '#52b788' : oneColor === 'been' ? '#e63946' : oneColor === 'want' ? '#ff8c61' : '#000' }
-                                ]}
-                            >
-                                {oneColor}
-                            </Text>
-                        </View>
-                        <View style={styles.svgCon}>
-                            <SVG
-                                width={width - 20}
-                                height={(width - 20) / SVG_RATIO}
-                                lived={livedCountries}
-                                been={beenCountries}
-                                want={wantCountries}
-                                oneColor={oneColor}
-                                openModal={false}
-                            />
-                        </View>
+                <View style={AppStyles.header}>
+                    <View style={AppStyles.headerTop}>
+                        <Text style={AppStyles.headerTitle}>Progress</Text>
                     </View>
+                </View>
 
-                    <View style={styles.progressCon}>
-                        {cards.map(({ title, total, visited, description }) => (
-                            <View style={styles.box} key={title}>
+                <View style={styles.content}>
+                    <FlatList
+                        data={cards}
+                        keyExtractor={item => item.title}
+                        ListHeaderComponent={() => (
+                            <View>
+                                <FlatList
+                                    data={oneColors}
+                                    renderItem={({ item }) => (
+                                        <SVG
+                                            width={width - 20}
+                                            height={(width - 20) / SVG_RATIO}
+                                            lived={livedCountries}
+                                            been={beenCountries}
+                                            want={wantCountries}
+                                            oneColor={item}
+                                            openModal={() => null}
+                                        />
+                                    )}
+                                    horizontal
+                                    showsHorizontalScrollIndicator
+                                    pagingEnabled
+                                    bounces={false}
+                                    keyExtractor={item => item}
+                                    onScroll={Animated.event(
+                                        [ { nativeEvent: { contentOffset: { x: scrollX } } } ],
+                                        { useNativeDriver: false }
+                                    )}
+                                    scrollEventThrottle={32}
+                                />
+                            </View>
+                        )}
+                        renderItem={({ item }) => (
+                            <View style={styles.box}>
                                 <View style={styles.start}>
-                                    <Text style={styles.title}>{title}</Text>
+                                    <Text style={styles.title}>{item.title}</Text>
                                 </View>
                                 <View style={styles.center}>
-                                    <Text style={styles.value}>{visited}</Text>
+                                    <Text style={styles.value}>{item.visited}</Text>
                                     <Text style={[styles.value, { marginHorizontal: 10, fontSize: 36 }]}>/</Text>
-                                    <Text style={styles.value}>{total}</Text>
+                                    <Text style={styles.value}>{item.total}</Text>
                                 </View>
                                 <View style={styles.center}>
-                                    <Text style={styles.text}>{description}</Text>
+                                    <Text style={styles.text}>{item.description}</Text>
                                 </View>
                             </View>
-                        ))}
-                    </View>
-                </ScrollView>
+                        )}
+                    />
+                </View>
             </SafeAreaView>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    mapCon: {
-        paddingTop: 20,
-        paddingHorizontal: 10
-    },
-    mapTitleCon: {
-        paddingVertical: 5,
+    content: {
+        flex: 1,
         paddingHorizontal: 10,
-        marginBottom: 20,
-        borderBottomColor: '#ced4da',
-        borderBottomWidth: 1
-    },
-    mapTitle: {
-        fontSize: 50,
-        fontWeight: 100
-    },
-    progressCon: {
-        flexDirection: 'column',
-        padding: 20,
-        paddingTop: 10
+        paddingBottom: 10
     },
     box: {
         flexDirection: 'column',
         padding: 20,
         backgroundColor: '#fff',
         borderRadius: 10,
-        marginTop: 10
+        marginTop: 15,
+        marginHorizontal: 10
     },
     start: {
         alignItems: 'flex-start',
@@ -155,7 +153,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 15,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#8d99ae'
     }
 })

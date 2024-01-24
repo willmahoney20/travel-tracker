@@ -1,21 +1,54 @@
-import { StyleSheet, Modal, View, Text, Image, Pressable, TouchableWithoutFeedback, Dimensions  } from 'react-native'
+import { useRef, useEffect } from 'react'
+import { StyleSheet, Modal, Animated, PanResponder, View, Text, Pressable, TouchableWithoutFeedback, Dimensions, SafeAreaView  } from 'react-native'
+import { Image } from 'expo-image'
 import Flags from '../assets/Flags.js'
 import { Entypo } from '@expo/vector-icons'
 import useStore from '../store.js'
 import { FontAwesome } from '@expo/vector-icons'
 import { Ionicons } from '@expo/vector-icons'
 
+const { width, height } = Dimensions.get('window')
+
 export default ({ visible, title, id, handleClose }) => {
     // get the Zustand data and functions
-    const livedCountries = useStore(state => state.livedCountries)
-    const addLived = useStore(state => state.addLived)
-    const removeLived = useStore(state => state.removeLived)
-    const beenCountries = useStore(state => state.beenCountries)
-    const addBeen = useStore(state => state.addBeen)
-    const removeBeen = useStore(state => state.removeBeen)
-    const wantCountries = useStore(state => state.wantCountries)
-    const addWant = useStore(state => state.addWant)
-    const removeWant = useStore(state => state.removeWant)
+    const { livedCountries, addLived, removeLived, beenCountries, addBeen, removeBeen, wantCountries, addWant, removeWant } = useStore()
+    const panY = useRef(new Animated.Value(height)).current
+
+    const handleOpen = () => {
+        Animated.timing(panY, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false
+        }).start()
+    }
+
+    const closeAnim = Animated.timing(panY, {
+        toValue: height,
+        duration: 500,
+        useNativeDriver: false
+    })
+
+    useEffect(() => {
+        if(visible) handleOpen()
+    }, [visible])
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderMove: (e, gestureState) => {
+                if(gestureState.dy > 0){
+                    panY.setValue(gestureState.dy)
+                }
+            },
+            onPanResponderRelease: (e, gestureState) => {
+                if(gestureState.dy > 100){
+                    closeAnim.start(() => handleClose())
+                } else {
+                    handleOpen()
+                }
+            }
+        })
+    ).current
 
     const handleLived = async () => {
         if(beenCountries.includes(id)){
@@ -66,98 +99,92 @@ export default ({ visible, title, id, handleClose }) => {
     }
 
     return (
-        <Modal visible={visible} transparent={true} animationType='fade' onRequestClose={handleClose}>
-            <View style={styles.modalContainer}>
-                <TouchableWithoutFeedback onPress={handleClose}>
-                    <View style={styles.modalBackground}></View>
-                </TouchableWithoutFeedback>
-                <View style={styles.modal}>
-                    <Pressable style={styles.close} onPress={handleClose}>
-                        <Entypo name='cross' size={24} color='#000' />
-                    </Pressable>
-                    <Text style={styles.title}>{title}</Text>
-                    <Image source={Flags[id.toLowerCase()]} style={styles.flag} />
-                    <View style={styles.btns}>
-                        <View style={styles.btnCon}>
-                            <Pressable onPress={handleLived}>
-                                <View style={[styles.btn, { backgroundColor: livedCountries.includes(id) ? '#52b788' : '#ced4da'}]}>
-                                    <Ionicons name='home-outline' size={20} color={livedCountries.includes(id) ? '#fff' : '#000'} />
-                                </View>
-                            </Pressable>
-                            <Text style={styles.btnText}>Lived</Text>
+        <Modal visible={visible} transparent={true} animationType='slide' onRequestClose={handleClose}>
+            <TouchableWithoutFeedback onPress={handleClose}>
+                <View style={styles.modalContainer}>
+                    <Animated.View style={[styles.modal, { transform: [{ translateY: panY }] }]} {...panResponder.panHandlers}>
+                        <View style={styles.imageCon}>
+                            <Image source={{uri: 'https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'}} cachePolicy='memory' style={styles.image} />
+                            <Text style={styles.imageTitle}>{title}</Text>
                         </View>
-                        <View style={styles.btnCon}>
-                            <Pressable onPress={() => handleBeen(id)}>
-                                <View style={[styles.btn, { backgroundColor: beenCountries.includes(id) ? '#e63946' : '#ced4da'}]}>
-                                    <FontAwesome name='flag-o' size={20} color={beenCountries.includes(id) ? '#fff' : '#000'} />
-                                </View>
-                            </Pressable>
-                            <Text style={styles.btnText}>Been</Text>
+                        
+                        <View style={styles.btns}>
+                            <View style={styles.btnCon}>
+                                <Pressable onPress={handleLived}>
+                                    <View style={[styles.btn, { backgroundColor: livedCountries.includes(id) ? '#52b788' : '#ced4da'}]}>
+                                        <Ionicons name='home-outline' size={17} color={livedCountries.includes(id) ? '#fff' : '#000'} />
+                                        <Text style={[styles.btnText, { color: livedCountries.includes(id) ? '#fff' : '#000' }]}>Lived</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
+                            <View style={styles.btnCon}>
+                                <Pressable onPress={() => handleBeen(id)}>
+                                    <View style={[styles.btn, { backgroundColor: beenCountries.includes(id) ? '#e63946' : '#ced4da'}]}>
+                                        <FontAwesome name='flag-o' size={17} color={beenCountries.includes(id) ? '#fff' : '#000'} />
+                                        <Text style={[styles.btnText, { color: beenCountries.includes(id) ? '#fff' : '#000' }]}>Been</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
+                            <View style={styles.btnCon}>
+                                <Pressable onPress={() => handleWant(id)}>
+                                    <View style={[styles.btn, { backgroundColor: wantCountries.includes(id) ? '#ee6c4d' : '#ced4da'}]}>
+                                        <Ionicons name='heart-outline' size={17} color={wantCountries.includes(id) ? '#fff' : '#000'} />
+                                        <Text style={[styles.btnText, { color: wantCountries.includes(id) ? '#fff' : '#000' }]}>Want</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
                         </View>
-                        <View style={styles.btnCon}>
-                            <Pressable onPress={() => handleWant(id)}>
-                                <View style={[styles.btn, { backgroundColor: wantCountries.includes(id) ? '#ee6c4d' : '#ced4da'}]}>
-                                    <Ionicons name='heart-outline' size={20} color={wantCountries.includes(id) ? '#fff' : '#000'} />
-                                </View>
-                            </Pressable>
-                            <Text style={styles.btnText}>Want</Text>
-                        </View>
-                    </View>
+                    </Animated.View>
                 </View>
-            </View>
+            </TouchableWithoutFeedback>
         </Modal>
     )
 }
 
-const windowWidth = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
-
 const styles = StyleSheet.create({
     modalContainer: {
-        flex: 1
-    },
-    modalBackground: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'transparent'
+        justifyContent: 'flex-end',
     },
     modal: {
-        position: 'absolute',
-        top: (windowHeight / 2) - 160,
-        left: (windowWidth / 2) - 120,
-        margin: 'auto',
-        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        width: 240,
-        height: 320,
-        padding: 40,
-        borderRadius: 10,
-        backgroundColor: 'rgba(255, 255, 255, .9)'
+        width: width,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.35,
+        shadowRadius: 4,
+        elevation: 5,
+        padding: 20
     },
-    close: {
+    image: {
+        width: width - 40,
+        height: 240,
+        borderRadius: 20
+    },
+    imageTitle: {
         position: 'absolute',
-        top: 10,
-        right: 10
-    },
-    title: {
-        fontSize: 22,
+        bottom: 15,
+        left: 15,
+        fontSize: 50,
         fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#1d3557',
-        textAlign: 'center'
-    },
-    flag: {
-        width: 160,
-        height: 107,
-        marginBottom: 20,
+        lineHeight: 52,
+        color: '#fff',
+        textShadowColor:'#777',
+        textShadowOffset: { width: 2, height: 2 },
+        textShadowRadius: 4,
     },
     btns: {
-        width: 160,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
+        width: width - 40,
+        paddingTop: 20,
     },
     btnCon: {
         flexDirection: 'column',
@@ -165,16 +192,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     btn: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        width: 42,
         height: 42,
-        borderRadius: '50%',
-        marginBottom: 10
+        borderRadius: 25,
+        paddingHorizontal: 15,
+        marginBottom: 10,
     },
     btnText: {
-        fontSize: 13,
-        fontWeight: 500,
-        color: '#000'
+        fontSize: 17,
+        fontWeight: '500',
+        color: '#000',
+        marginLeft: 5
     }
 })
