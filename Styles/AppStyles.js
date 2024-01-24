@@ -23,6 +23,8 @@ export default StyleSheet.create({
         fontWeight: 700,
         margin: 0
     },
+
+    // styles for the onboarding
     obCon: {
         flex: 1,
         justifyContent: 'space-between'
@@ -39,4 +41,27 @@ export default StyleSheet.create({
         fontWeight: '700',
         color: '#fff',
     },
+
+    // styles for the info pages in settings
+    ipPage: {
+        flex: 1
+    },
+    ipSection: {
+        marginTop: 15
+    },
+    ipTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 5
+    },
+    ipText: {
+        fontSize: 15,
+        fontWeight: '300',
+        color: '#777',
+        marginBottom: 5
+    },
+    ipList: {
+        paddingLeft: 10,
+    }
 })

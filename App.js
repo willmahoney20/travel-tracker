@@ -27,7 +27,7 @@ export default () => {
             <Onboarding visible={visible} handleClose={() => setVisible(false)} />
             
             <Navigator
-                initialRouteName='Map'
+                initialRouteName='Settings'
                 screenOptions={{
                     tabBarActiveTintColor: '#e63946',
                     tabBarInactiveTintColor: '#8d99ae',

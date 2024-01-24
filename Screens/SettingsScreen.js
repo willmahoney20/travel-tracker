@@ -1,12 +1,19 @@
-import { StyleSheet, View, Switch, SafeAreaView, Text } from 'react-native'
+import { useState } from 'react'
+import { StyleSheet, View, Switch, SafeAreaView, Text, Pressable } from 'react-native'
 import AppStyles from '../Styles/AppStyles'
 import useStore from '../store'
+import InformationPages from '../Components/InformationPages'
 
 export default () => {
     const { themes, theme, darkMode, updateDarkMode, deviceSettings, updateDeviceSettings } = useStore()
+    const [visible, setVisible] = useState(false)
+    const [page, setPage] = useState('')
 
     return (
         <View style={[AppStyles.container, { backgroundColor: themes[theme]['bg1'] }]}>
+
+            <InformationPages visible={visible} page={page} handleClose={() => setVisible(false)} />
+
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={AppStyles.header}>
                     <View style={AppStyles.headerTop}>
@@ -38,8 +45,22 @@ export default () => {
                     </View>
                     <View style={[styles.footer, { borderTopColor: themes[theme]['bg3'] }]}>
                         <View style={styles.footerLinks}>
-                            <Text style={[styles.footerText, { color: themes[theme]['c2'] }]}>Terms & Conditions</Text>
-                            <Text style={[styles.footerText, { color: themes[theme]['c2'] }]}>Privacy Policy</Text>
+                            <Pressable
+                                onPress={() => {
+                                    setPage('Terms & Conditions')
+                                    setVisible(true)
+                                }}
+                            >
+                                <Text style={[styles.footerText, { color: themes[theme]['c2'] }]}>Terms & Conditions</Text>
+                            </Pressable>
+                            <Pressable
+                                onPress={() => {
+                                    setPage('Privacy Policy')
+                                    setVisible(true)
+                                }}
+                            >
+                                <Text style={[styles.footerText, { color: themes[theme]['c2'] }]}>Privacy Policy</Text>
+                            </Pressable>
                         </View>
                         <Text style={[styles.footerText, styles.footerMain, { color: themes[theme]['c1'] }]}>
                             &copy; {new Date().getFullYear()} Hoppin
