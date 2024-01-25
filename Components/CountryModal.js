@@ -11,7 +11,7 @@ const { width, height } = Dimensions.get('window')
 
 export default ({ visible, title, id, handleClose }) => {
     // get the Zustand data and functions
-    const { livedCountries, addLived, removeLived, beenCountries, addBeen, removeBeen, wantCountries, addWant, removeWant } = useStore()
+    const { themes, theme, livedCountries, addLived, removeLived, beenCountries, addBeen, removeBeen, wantCountries, addWant, removeWant } = useStore()
     const panY = useRef(new Animated.Value(height)).current
 
     const handleOpen = () => {
@@ -102,7 +102,17 @@ export default ({ visible, title, id, handleClose }) => {
         <Modal visible={visible} transparent={true} animationType='slide' onRequestClose={handleClose}>
             <TouchableWithoutFeedback onPress={handleClose}>
                 <View style={styles.modalContainer}>
-                    <Animated.View style={[styles.modal, { transform: [{ translateY: panY }] }]} {...panResponder.panHandlers}>
+                    <Animated.View
+                        style={[
+                            styles.modal,
+                            {
+                                transform: [{ translateY: panY }],
+                                backgroundColor: themes[theme]['bg2'],
+                                shadowColor: themes[theme]['c1']
+                            }
+                        ]}
+                        {...panResponder.panHandlers}
+                    >
                         <View style={styles.imageCon}>
                             <Image source={{uri: 'https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'}} cachePolicy='memory' style={styles.image} />
                             <Text style={styles.imageTitle}>{title}</Text>
@@ -111,25 +121,25 @@ export default ({ visible, title, id, handleClose }) => {
                         <View style={styles.btns}>
                             <View style={styles.btnCon}>
                                 <Pressable onPress={handleLived}>
-                                    <View style={[styles.btn, { backgroundColor: livedCountries.includes(id) ? '#52b788' : '#ced4da'}]}>
-                                        <Ionicons name='home-outline' size={17} color={livedCountries.includes(id) ? '#fff' : '#000'} />
-                                        <Text style={[styles.btnText, { color: livedCountries.includes(id) ? '#fff' : '#000' }]}>Lived</Text>
+                                    <View style={[styles.btn, { backgroundColor: livedCountries.includes(id) ? '#52b788' : themes[theme]['map_fill']}]}>
+                                        <Ionicons name='home-outline' size={17} color={livedCountries.includes(id) ? '#fff' : themes[theme]['c1']} />
+                                        <Text style={[styles.btnText, { color: livedCountries.includes(id) ? '#fff' : themes[theme]['c1'] }]}>Lived</Text>
                                     </View>
                                 </Pressable>
                             </View>
                             <View style={styles.btnCon}>
                                 <Pressable onPress={() => handleBeen(id)}>
-                                    <View style={[styles.btn, { backgroundColor: beenCountries.includes(id) ? '#e63946' : '#ced4da'}]}>
-                                        <FontAwesome name='flag-o' size={17} color={beenCountries.includes(id) ? '#fff' : '#000'} />
-                                        <Text style={[styles.btnText, { color: beenCountries.includes(id) ? '#fff' : '#000' }]}>Been</Text>
+                                    <View style={[styles.btn, { backgroundColor: beenCountries.includes(id) ? '#e63946' : themes[theme]['map_fill']}]}>
+                                        <FontAwesome name='flag-o' size={17} color={beenCountries.includes(id) ? '#fff' : themes[theme]['c1']} />
+                                        <Text style={[styles.btnText, { color: beenCountries.includes(id) ? '#fff' : themes[theme]['c1'] }]}>Been</Text>
                                     </View>
                                 </Pressable>
                             </View>
                             <View style={styles.btnCon}>
                                 <Pressable onPress={() => handleWant(id)}>
-                                    <View style={[styles.btn, { backgroundColor: wantCountries.includes(id) ? '#ee6c4d' : '#ced4da'}]}>
-                                        <Ionicons name='heart-outline' size={17} color={wantCountries.includes(id) ? '#fff' : '#000'} />
-                                        <Text style={[styles.btnText, { color: wantCountries.includes(id) ? '#fff' : '#000' }]}>Want</Text>
+                                    <View style={[styles.btn, { backgroundColor: wantCountries.includes(id) ? '#ee6c4d' : themes[theme]['map_fill']}]}>
+                                        <Ionicons name='heart-outline' size={17} color={wantCountries.includes(id) ? '#fff' : themes[theme]['c1']} />
+                                        <Text style={[styles.btnText, { color: wantCountries.includes(id) ? '#fff' : themes[theme]['c1'] }]}>Want</Text>
                                     </View>
                                 </Pressable>
                             </View>

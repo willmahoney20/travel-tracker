@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native'
+import { useState } from 'react'
+import { StyleSheet, useWindowDimensions, View } from 'react-native'
 import { Gesture, GestureHandlerRootView, GestureDetector  } from 'react-native-gesture-handler'
 import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated'
 import WorldMap from '../WorldMap/SVG.jsx'
@@ -14,7 +14,7 @@ const SVG_RATIO = (ORIGINAL_SVG_WIDTH / ORIGINAL_SVG_HEIGHT)
 
 export default () => {
     // get the Zustand data and functions
-    const { livedCountries, beenCountries, wantCountries } = useStore()
+    const { themes, theme, livedCountries, beenCountries, wantCountries } = useStore()
 
     const [modalVisible, setModalVisible] = useState(false) // country code for the modal popup
     const [modalData, setModalData] = useState({ id: '', title: '' }) // object to hold modal id and title
@@ -71,7 +71,7 @@ export default () => {
     }
 
     return (
-        <View style={[AppStyles.container, styles.homeContainer]}>
+        <View style={[AppStyles.container, styles.homeContainer, { backgroundColor: themes[theme]['bg1'] }]}>
             <GestureHandlerRootView>
                 <CountryModal
                     visible={modalVisible}
@@ -85,6 +85,7 @@ export default () => {
 
                 <GestureDetector gesture={panGesture}>
                     <Animated.View style={[styles.worldMapContainer, animatedStyle]}>
+                        {themes &&
                         <WorldMap
                             lived={livedCountries}
                             been={beenCountries}
@@ -92,7 +93,7 @@ export default () => {
                             height={screenHeight}
                             width={width}
                             openModal={openModal}
-                        />
+                        />}
                     </Animated.View>
                 </GestureDetector>
             </GestureHandlerRootView>

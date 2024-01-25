@@ -6,8 +6,7 @@ import Countries from '../WorldMap/Countries'
 import SVG from '../WorldMap/SVG'
 
 export default () => {
-    const { livedCountries, beenCountries, wantCountries } = useStore()
-    const [oneColorIndex, setOneColorIndex] = useState(0)
+    const { themes, theme, livedCountries, beenCountries, wantCountries } = useStore()
     const [oneColors] = useState(['been', 'lived', 'want'])
     const [cards, setCards] = useState([])
     const scrollX = useRef(new Animated.Value(0)).current
@@ -56,11 +55,11 @@ export default () => {
     }, [livedCountries, beenCountries])
 
     return (
-        <View style={AppStyles.container}>
+        <View style={[AppStyles.container, { backgroundColor: themes[theme]['bg1'] }]}>
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={AppStyles.header}>
                     <View style={AppStyles.headerTop}>
-                        <Text style={AppStyles.headerTitle}>Progress</Text>
+                        <Text style={[AppStyles.headerTitle, { color: themes[theme]['c1'] }]}>Progress</Text>
                     </View>
                 </View>
 
@@ -97,9 +96,9 @@ export default () => {
                             </View>
                         )}
                         renderItem={({ item }) => (
-                            <View style={styles.box}>
+                            <View style={[styles.box, { backgroundColor: themes[theme]['bg2'] }]}>
                                 <View style={styles.start}>
-                                    <Text style={styles.title}>{item.title}</Text>
+                                    <Text style={[styles.title, { color: themes[theme]['c1'] }]}>{item.title}</Text>
                                 </View>
                                 <View style={styles.center}>
                                     <Text style={styles.value}>{item.visited}</Text>
@@ -107,7 +106,7 @@ export default () => {
                                     <Text style={styles.value}>{item.total}</Text>
                                 </View>
                                 <View style={styles.center}>
-                                    <Text style={styles.text}>{item.description}</Text>
+                                    <Text style={[styles.text, { color: themes[theme]['c3'] }]}>{item.description}</Text>
                                 </View>
                             </View>
                         )}

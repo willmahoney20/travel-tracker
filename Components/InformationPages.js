@@ -3,7 +3,7 @@ import { Entypo } from '@expo/vector-icons'
 import Terms from './Terms.js'
 import PrivacyPolicy from './PrivacyPolicy.js'
 
-export default ({ visible, page, handleClose }) => {
+export default ({ themes, theme, visible, page, handleClose }) => {
     return (
         <Modal
             visible={visible}
@@ -12,22 +12,24 @@ export default ({ visible, page, handleClose }) => {
             presentationStyle='fullScreen'
             onRequestClose={handleClose}
         >
-            <SafeAreaView style={{ flex: 1 }}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.header}>
-                        <Pressable onPress={handleClose} style={{ width: 32 }}>
-                            <Entypo name='chevron-left' size={22} color='#444' />
-                        </Pressable>
-                        <Text style={styles.title}>{page}</Text>
-                        <View style={{ width: 32 }}></View>
-                    </View>
+            <View style={{ flex: 1, backgroundColor: themes[theme]['bg2'] }}>
+                <SafeAreaView style={{ flex: 1 }}>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.header}>
+                            <Pressable onPress={handleClose} style={{ width: 32 }}>
+                                <Entypo name='chevron-left' size={22} color={themes[theme]['c2']} />
+                            </Pressable>
+                            <Text style={[styles.title, { color: themes[theme]['c1'] }]}>{page}</Text>
+                            <View style={{ width: 32 }}></View>
+                        </View>
 
-                    {page === 'Terms & Conditions' ? 
-                    <Terms /> : 
-                    page === 'Privacy Policy' ?
-                    <PrivacyPolicy /> : null}
-                </View>
-            </SafeAreaView>
+                        {page === 'Terms & Conditions' ? 
+                        <Terms themes={themes} theme={theme} /> : 
+                        page === 'Privacy Policy' ?
+                        <PrivacyPolicy themes={themes} theme={theme} /> : null}
+                    </View>
+                </SafeAreaView>
+            </View>
         </Modal>
     )
 }

@@ -2,8 +2,11 @@ import React from "react"
 import Svg, { Text } from "react-native-svg"
 import Path from "./Path.jsx"
 import Data from "./Data.js"
+import useStore from "../store.js"
 
 export default ({ lived, been, want, oneColor, width, height, openModal }) => {
+    const { themes, theme } = useStore()
+
     return (
         <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -13,6 +16,8 @@ export default ({ lived, been, want, oneColor, width, height, openModal }) => {
         >
             {Data.map(({ id, title, d }) => <Path
                 key={id}
+                themes={themes}
+                theme={theme}
                 id={id}
                 title={title}
                 d={d}
@@ -28,7 +33,7 @@ export default ({ lived, been, want, oneColor, width, height, openModal }) => {
                 x={x}
                 y={y}
                 textAnchor="middle"
-                fill='#000'
+                fill={themes[theme]['c1']}
                 style={{ fontSize: 10, fontWeight: '500' }}
             >
                 {title}

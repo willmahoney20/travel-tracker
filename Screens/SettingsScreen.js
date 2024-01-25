@@ -12,7 +12,7 @@ export default () => {
     return (
         <View style={[AppStyles.container, { backgroundColor: themes[theme]['bg1'] }]}>
 
-            <InformationPages visible={visible} page={page} handleClose={() => setVisible(false)} />
+            <InformationPages themes={themes} theme={theme} visible={visible} page={page} handleClose={() => setVisible(false)} />
 
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={AppStyles.header}>

@@ -13,7 +13,7 @@ import Onboarding from './Onboarding/Onboarding'
 const { Navigator, Screen } = createBottomTabNavigator()
 
 export default () => {
-    const { onboarding, theme } = useStore()
+    const { onboarding, themes, theme } = useStore()
     const [visible, setVisible] = useState(false)
 
     useEffect(() => {
@@ -27,13 +27,17 @@ export default () => {
             <Onboarding visible={visible} handleClose={() => setVisible(false)} />
             
             <Navigator
-                initialRouteName='Settings'
+                initialRouteName='Map'
                 screenOptions={{
                     tabBarActiveTintColor: '#e63946',
-                    tabBarInactiveTintColor: '#8d99ae',
+                    tabBarInactiveTintColor: theme === 'dark' ? '#666' : '#8d99ae',
                     headerShown: false,
-                    tabBarStyle: { marginBottom: 6 },
-                    // lazy: false
+                    tabBarStyle: {
+                        paddingBottom: 4,
+                        backgroundColor: themes[theme]['bg2'],
+                        borderTopWidth: 0
+                    },
+                    lazy: false
                 }}
             >
                 <Screen

@@ -32,11 +32,13 @@ const useStore = create(set => ({
     // props for themes
     themes: {
         'dark': {
-            'bg1': '#000',
-            'bg2': '#232323',
+            'bg1': '#232323',
+            'bg2': '#000',
             'bg3': '#444',
             'c1': '#fff',
             'c2': '#ccc',
+            'c3': '#999',
+            'map_fill': '#444'
         },
         'light': {
             'bg1': '#EDF2F4',
@@ -44,6 +46,8 @@ const useStore = create(set => ({
             'bg3': '#D9D9D9',
             'c1': '#000',
             'c2': '#777',
+            'c3': '#6c757d',
+            'map_fill': '#ced4da'
         }
     },
     theme: 'light', // use darkMode value to set this when the app loads

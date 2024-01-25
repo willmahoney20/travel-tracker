@@ -16,7 +16,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 export default () => {
-    const { livedCountries, beenCountries, wantCountries } = useStore()
+    const { themes, theme, livedCountries, beenCountries, wantCountries } = useStore()
     const [contentTransitioning, setContentTransitioning] = useState(false)
     const [search, setSearch] = useState('')
     const [displayStyle, setDisplayStyle] = useState('grid') // options include 'grid' and 'list'
@@ -67,7 +67,7 @@ export default () => {
     }
 
     return (
-        <View style={AppStyles.container}>
+        <View style={[AppStyles.container, { backgroundColor: themes[theme]['bg1'] }]}>
             <CountryModal
                 visible={modalVisible}
                 id={modalData.id}
@@ -81,7 +81,7 @@ export default () => {
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={AppStyles.header}>
                     <View style={AppStyles.headerTop}>
-                        <Text style={AppStyles.headerTitle}>Explore</Text>
+                        <Text style={[AppStyles.headerTitle, { color: themes[theme]['c1'] }]}>Explore</Text>
                         <Pressable onPress={() => {
                             if(!contentTransitioning){
                                 setContentTransitioning(true)
@@ -89,8 +89,8 @@ export default () => {
                             }
                         }}>
                             {displayStyle === 'grid' ?
-                            <Ionicons name='grid-outline' size={22} color='#000' /> :
-                            <Ionicons name='list' size={22} color='#000' />}
+                            <Ionicons name='grid-outline' size={22} color={themes[theme]['c1']} /> :
+                            <Ionicons name='list' size={22} color={themes[theme]['c1']} />}
                         </Pressable>
                     </View>
                     <View>
@@ -98,12 +98,12 @@ export default () => {
                             value={search}
                             onChangeText={value => handleSearch(value)}
                             placeholder='Search...'
-                            placeholderTextColor='#6c757d'
+                            placeholderTextColor={themes[theme]['c3']}
                             autoCorrect={false}
-                            style={styles.searchInput}
+                            style={[styles.searchInput, { backgroundColor: themes[theme]['bg3'] }]}
                         />
                         <View style={styles.searchIconCon}>
-                            <Ionicons name='search' size={16} color='#6c757d' style={styles.searchIcon} />
+                            <Ionicons name='search' size={16} color={themes[theme]['c3']} style={styles.searchIcon} />
                         </View>
                         {search !== '' &&
                         <Pressable
@@ -113,7 +113,7 @@ export default () => {
                             }}
                             style={[styles.searchIconCon, { right: 11, left: null }]}
                         >
-                            <Ionicons name='close' size={16} color='#6c757d' style={styles.searchIcon} />
+                            <Ionicons name='close' size={16} color={themes[theme]['c3']} style={styles.searchIcon} />
                         </Pressable>}
                     </View>
                 </View>
@@ -130,7 +130,7 @@ export default () => {
                                             cachePolicy='memory'
                                             style={styles.flag}
                                         />
-                                        <Text style={styles.title}>{item.title}</Text>
+                                        <Text style={[styles.title, { color: themes[theme]['c1'] }]}>{item.title}</Text>
                                     </View>
                                     <View>
                                         <Entypo name='chevron-right' size={20} color='#adb5bd' />
@@ -150,7 +150,7 @@ export default () => {
                             return (
                                 <View key={grid_item.continent} style={styles.gridRow}>
                                     <View style={styles.gridTitleCon}>
-                                        <Text style={styles.gridTitle}>{grid_item.continent}</Text>
+                                        <Text style={[styles.gridTitle, { color: themes[theme]['c1'] }]}>{grid_item.continent}</Text>
                                     </View>
                                     <FlatList
                                         data={grid_item.countries}
@@ -172,7 +172,7 @@ export default () => {
                                                         />
                                                     </View>
                                                     <View style={styles.gridImageDetails}>
-                                                        <Text style={styles.gridText} numberOfLines={1}>{item.title}</Text>
+                                                        <Text style={[styles.gridText, { color: themes[theme]['c2'] }]} numberOfLines={1}>{item.title}</Text>
                                                         {fill && 
                                                         <View style={[styles.gridDot, { backgroundColor: fill }]}></View>}
                                                     </View>
