@@ -14,11 +14,24 @@ const { Navigator, Screen } = createBottomTabNavigator()
 
 export default () => {
     const { onboarding, themes, theme } = useStore()
+    const [isLoading, setIsLoading] = useState(true)
     const [visible, setVisible] = useState(false)
+
+    useEffect(() => {
+        const loadTheme = async () => {
+            await useStore.getState().loadSettings()
+
+            setIsLoading(false)
+        }
+
+        loadTheme()
+    }, [])
 
     useEffect(() => {
         if(onboarding !== 'complete') setVisible(true)
     }, [])
+
+    if(isLoading) return null
 
     return (
         <NavigationContainer>

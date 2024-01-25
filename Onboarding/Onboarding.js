@@ -10,7 +10,7 @@ import useStore from '../store.js'
 const { width, height } = Dimensions.get('window')
 
 export default ({ visible, handleClose }) => {
-    const { onboarding, updateOnboarding } = useStore()
+    const { themes, theme, onboarding, updateOnboarding } = useStore()
     const [stage, setStage] = useState(1)
     const panY = useRef(new Animated.Value(height)).current
     const modalHeight = useRef(new Animated.Value(260)).current
@@ -43,26 +43,35 @@ export default ({ visible, handleClose }) => {
     return (
         <Modal visible={visible} transparent={true} animationType='slide' onRequestClose={handleClose}>
             <View style={styles.modalContainer}>
-                <Animated.View style={[styles.modal, { height: modalHeight, transform: [{ translateY: panY }] }]}>
+                <Animated.View
+                    style={[
+                        styles.modal,
+                        {
+                            height: modalHeight,
+                            transform: [{ translateY: panY }],
+                            backgroundColor: themes[theme]['bg2']
+                        }
+                    ]}
+                >
                     {stage > 1 &&
-                    <View style={styles.back}>
+                    <View style={[styles.back, { backgroundColor: themes[theme]['bg2'] }]}>
                         <Pressable
                             onPress={() => {
                                 updateOnboarding(stage - 1)
                                 setStage(prev => prev - 1)
                             }}
                         >
-                            <Entypo name='chevron-left' size={20} color='#444' />
+                            <Entypo name='chevron-left' size={20} color={themes[theme]['c2']} />
                         </Pressable>
                     </View>}
                     {stage === 1 ?
-                    <Stage1 updateStage={value => setStage(value)} />
+                    <Stage1 themes={themes} theme={theme} updateStage={value => setStage(value)} />
                     : stage === 2 ? 
-                    <Stage2 updateStage={value => setStage(value)} />
+                    <Stage2 themes={themes} theme={theme} updateStage={value => setStage(value)} />
                     : stage === 3 ? 
-                    <Stage3 updateStage={value => setStage(value)} />
+                    <Stage3 themes={themes} theme={theme} updateStage={value => setStage(value)} />
                     : stage === 4 ? 
-                    <Stage4 handleClose={handleClose} />
+                    <Stage4 themes={themes} theme={theme} handleClose={handleClose} />
                     : null}
                 </Animated.View>
             </View>

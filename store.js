@@ -283,7 +283,7 @@ const useStore = create(set => ({
 }))
 
 useStore.getState().loadOnboarding()
-useStore.getState().loadSettings()
+// useStore.getState().loadSettings()
 
 // load the livedCountries when the app starts
 useStore.getState().loadLivedCountries()

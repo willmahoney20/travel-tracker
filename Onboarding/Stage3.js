@@ -9,7 +9,7 @@ import AppStyles from '../Styles/AppStyles.js'
 
 const { width, height } = Dimensions.get('window')
 
-export default ({ updateStage }) => {
+export default ({ themes, theme, updateStage }) => {
     const { updateOnboarding, livedCountries, beenCountries, addBeen, removeBeen } = useStore()
     const [search, setSearch] = useState('')
     const [data, setData] = useState(Countries)
@@ -42,20 +42,20 @@ export default ({ updateStage }) => {
     return (
         <View style={AppStyles.obCon}>
             <View>
-                <Text style={styles.title}>Been</Text>
-                <Text style={styles.subtitle}>Add the countries you've been to...</Text>
+                <Text style={[styles.title, { color: themes[theme]['c1'] }]}>Been</Text>
+                <Text style={[styles.subtitle, { color: themes[theme]['c2'] }]}>Add the countries you've been to...</Text>
                 
                 <View>
                     <TextInput
                         value={search}
                         onChangeText={value => handleSearch(value)}
                         placeholder='Search...'
-                        placeholderTextColor='#6c757d'
+                        placeholderTextColor={themes[theme]['c3']}
                         autoCorrect={false}
-                        style={styles.searchInput}
+                        style={[styles.searchInput, { backgroundColor: themes[theme]['bg3'] }]}
                     />
                     <View style={styles.searchIconCon}>
-                        <Ionicons name='search' size={16} color='#6c757d' style={styles.searchIcon} />
+                        <Ionicons name='search' size={16} color={themes[theme]['c3']} style={styles.searchIcon} />
                     </View>
                     {search !== '' &&
                     <Pressable
@@ -65,7 +65,7 @@ export default ({ updateStage }) => {
                         }}
                         style={[styles.searchIconCon, { right: 11, left: null }]}
                     >
-                        <Ionicons name='close' size={16} color='#6c757d' style={styles.searchIcon} />
+                        <Ionicons name='close' size={16} color={themes[theme]['c3']} style={styles.searchIcon} />
                     </Pressable>}
                 </View>
             </View>
@@ -82,14 +82,14 @@ export default ({ updateStage }) => {
                                         cachePolicy='memory'
                                         style={styles.flag}
                                     />
-                                    <Text style={styles.text}>{item.title}</Text>
+                                    <Text style={[styles.text, { color: themes[theme]['c1'] }]}>{item.title}</Text>
                                 </View>
                                 <Pressable onPress={() => handleBeen(item.id)}>
                                     {livedCountries.includes(item.id) ?
                                     <Entypo name='check' size={20} color={'#52b788'} /> :
                                     beenCountries.includes(item.id) ?
                                     <Entypo name='check' size={20} color={'#e63946'} /> :
-                                    <Entypo name='plus' size={20} color='#444' />}
+                                    <Entypo name='plus' size={20} color={themes[theme]['c2']} />}
                                 </Pressable>
                             </View>
                         </Pressable>

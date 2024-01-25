@@ -10,7 +10,7 @@ const width = Dimensions.get('window').width
 const countries = ['ae', 'at', 'au', 'ba', 'be', 'ca', 'de', 'ee', 'fr', 'gb', 'ge', 'gr', 'hu', 'ie', 'na', 'no', 'ug', 'us', 've', 'ye']
 const doubled = [...countries, ...countries]
 
-export default ({ updateStage }) => {
+export default ({ themes, theme, updateStage }) => {
     const { updateOnboarding } = useStore()
     const flagsPosition = new Animated.Value(0)
 
@@ -40,8 +40,8 @@ export default ({ updateStage }) => {
     return (
         <View style={AppStyles.obCon}>
             <View>
-                <Text style={styles.title}>WELCOME TO HOPPIN</Text>
-                <Text style={styles.subtitle}>Start adding the countries you’ve lived in, been to, and finally, want to travel to...</Text>
+                <Text style={[styles.title, { color: themes[theme]['c1'] }]}>WELCOME TO HOPPIN</Text>
+                <Text style={[styles.subtitle, { color: themes[theme]['c2'] }]}>Start adding the countries you’ve lived in, been to, and finally, want to travel to...</Text>
             </View>
             <View style={styles.flagsCon}>
                 <Animated.View style={[styles.flags, { transform: [{ translateX: flagsPosition }] }]}>
